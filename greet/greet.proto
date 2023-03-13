@@ -5,7 +5,7 @@ option go_package = "gorpc/greet";
 
 
 service Greet {
-    rpc greet(Request) returns (Greeting) {}
+    rpc SayGreetings (Request) returns (Greeting) {}
 }
 
 message Request {

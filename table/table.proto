@@ -5,7 +5,7 @@ option go_package = "gorpc/table";
 
 
 service Table {
-    rpc times(Request) returns (stream Result) {}
+    rpc times (Request) returns (stream Result) {}
 }
 
 message Request {
