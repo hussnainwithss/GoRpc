@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package table;
+option go_package = "gorpc/table";
+
+
+service Table {
+    rpc times(Request) returns (stream Result) {}
+}
+
+message Request {
+    int32 num = 1;
+}
+
+message Result {
+    string result = 1;
+}

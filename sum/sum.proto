@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sum;
+option go_package = "gorpc/sum";
+
+
+service Sum {
+    rpc sumNumbers(stream Number) returns (FinalSum) {}
+    rpc continuousSum(stream Number) returns (stream FinalSum) {}
+}
+
+
+message FinalSum {
+    int32 sum = 1;
+}
+
+message Number {
+    int32 num = 1;
+}
