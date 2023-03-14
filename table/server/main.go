@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -23,11 +22,12 @@ func makeRange(min, max int) []int {
 	return a
 }
 
-func (s *TableGeneratorServer) SumNumbers(ctx context.Context, in *table.Request, stream table.Table_TimesServer) error {
+func (s *TableGeneratorServer) Times(in *table.Request, stream table.Table_TimesServer) error {
 	num := in.GetNum()
+	log.Printf("got input: %d", num)
 
-	for i := range makeRange(1, 10) {
-		multiple := table.Result{Result: fmt.Sprintf("%d x %d = %d", num, i, num*int32(i))}
+	for _, multiplier := range makeRange(1, 10) {
+		multiple := table.Result{Result: fmt.Sprintf(" %d x %d = %d", num, multiplier, num*int32(multiplier))}
 		if err := stream.Send(&multiple); err != nil {
 			return err
 		}

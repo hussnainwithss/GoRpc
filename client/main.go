@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"io"
 	"log"
 	"time"
 
@@ -10,6 +12,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	greet "gorpc/greet"
+	table "gorpc/table"
 )
 
 const (
@@ -30,6 +33,8 @@ func main() {
 	switch *service {
 	case "greet":
 		greetClient()
+	case "table":
+		tableClient()
 
 	}
 
@@ -53,4 +58,40 @@ func greetClient() {
 	}
 
 	log.Printf("Response: %s", response.Greeting)
+}
+
+func tableClient() {
+	conn, err := grpc.Dial(tableService, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	log.Println("Connected to table service")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	c := table.NewTableClient(conn)
+
+	var input int32
+	fmt.Printf("Enter number to generate table: ")
+	fmt.Scanln(&input)
+
+	req := &table.Request{Num: int32(input)}
+
+	stream, err := c.Times(ctx, req)
+	if err != nil {
+		log.Fatalf("Could not receive response from service: %v", err)
+	}
+	for {
+		times, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("%v.Times(_) = _, %v", c, err)
+		}
+		log.Println(times)
+	}
+
 }
