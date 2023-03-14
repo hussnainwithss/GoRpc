@@ -99,7 +99,6 @@ func tableClient() {
 
 }
 
-// TODO: Fix format issues happening because of the go routine runnings
 func sumClient() {
 	var rpcMethod int
 	var reqNum int32
@@ -145,6 +144,7 @@ func sumClient() {
 		log.Printf("Final Sum: %d", reply.GetSum())
 
 	} else if rpcMethod == 2 {
+		var finalSum int32
 		fmt.Println("---Great you choice option 2---")
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
@@ -155,6 +155,7 @@ func sumClient() {
 		}
 
 		waitc := make(chan struct{})
+		finalSumChannel := make(chan int32)
 		go func() {
 			for {
 				in, err := stream.Recv()
@@ -166,21 +167,24 @@ func sumClient() {
 				if err != nil {
 					log.Fatalf("Failed to receive Sum : %v", err)
 				}
-				log.Printf("Got Sum %v\n", in.GetSum())
+				finalSumChannel <- in.GetSum()
 			}
 		}()
 
 		for reqNum != -9999 {
-			fmt.Println("Enter Number to Sum (-9999 to exit): ")
+			fmt.Printf("Enter Number to Sum (-9999 to exit): ")
 			fmt.Scan(&reqNum)
 			req := &sum.RequestNumber{Num: reqNum}
 			if reqNum != -9999 {
 				if err := stream.Send(req); err != nil {
 					log.Fatalf("%v.Send(%v) = %v", stream, reqNum, err)
 				}
+				finalSum = <-finalSumChannel
+				log.Printf("Current Sum: %d\n", finalSum)
 			}
 		}
 		stream.CloseSend()
+		log.Printf("Final Sum: %d\n", finalSum)
 		<-waitc
 	} else {
 		log.Fatalln("Invalid Choice! Exiting")
