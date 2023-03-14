@@ -44,7 +44,7 @@ func (c *sumClient) SumNumbers(ctx context.Context, opts ...grpc.CallOption) (Su
 }
 
 type Sum_SumNumbersClient interface {
-	Send(*Number) error
+	Send(*RequestNumber) error
 	CloseAndRecv() (*FinalSum, error)
 	grpc.ClientStream
 }
@@ -53,7 +53,7 @@ type sumSumNumbersClient struct {
 	grpc.ClientStream
 }
 
-func (x *sumSumNumbersClient) Send(m *Number) error {
+func (x *sumSumNumbersClient) Send(m *RequestNumber) error {
 	return x.ClientStream.SendMsg(m)
 }
 
@@ -78,7 +78,7 @@ func (c *sumClient) ContinuousSum(ctx context.Context, opts ...grpc.CallOption) 
 }
 
 type Sum_ContinuousSumClient interface {
-	Send(*Number) error
+	Send(*RequestNumber) error
 	Recv() (*FinalSum, error)
 	grpc.ClientStream
 }
@@ -87,7 +87,7 @@ type sumContinuousSumClient struct {
 	grpc.ClientStream
 }
 
-func (x *sumContinuousSumClient) Send(m *Number) error {
+func (x *sumContinuousSumClient) Send(m *RequestNumber) error {
 	return x.ClientStream.SendMsg(m)
 }
 
@@ -137,7 +137,7 @@ func _Sum_SumNumbers_Handler(srv interface{}, stream grpc.ServerStream) error {
 
 type Sum_SumNumbersServer interface {
 	SendAndClose(*FinalSum) error
-	Recv() (*Number, error)
+	Recv() (*RequestNumber, error)
 	grpc.ServerStream
 }
 
@@ -149,8 +149,8 @@ func (x *sumSumNumbersServer) SendAndClose(m *FinalSum) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *sumSumNumbersServer) Recv() (*Number, error) {
-	m := new(Number)
+func (x *sumSumNumbersServer) Recv() (*RequestNumber, error) {
+	m := new(RequestNumber)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func _Sum_ContinuousSum_Handler(srv interface{}, stream grpc.ServerStream) error
 
 type Sum_ContinuousSumServer interface {
 	Send(*FinalSum) error
-	Recv() (*Number, error)
+	Recv() (*RequestNumber, error)
 	grpc.ServerStream
 }
 
@@ -175,8 +175,8 @@ func (x *sumContinuousSumServer) Send(m *FinalSum) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *sumContinuousSumServer) Recv() (*Number, error) {
-	m := new(Number)
+func (x *sumContinuousSumServer) Recv() (*RequestNumber, error) {
+	m := new(RequestNumber)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}

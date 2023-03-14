@@ -5,8 +5,8 @@ option go_package = "gorpc/sum";
 
 
 service Sum {
-    rpc sumNumbers (stream Number) returns (FinalSum) {}
-    rpc continuousSum (stream Number) returns (stream FinalSum) {}
+    rpc sumNumbers (stream RequestNumber) returns (FinalSum) {}
+    rpc continuousSum (stream RequestNumber) returns (stream FinalSum) {}
 }
 
 
@@ -14,6 +14,6 @@ message FinalSum {
     int32 sum = 1;
 }
 
-message Number {
+message RequestNumber {
     int32 num = 1;
 }
